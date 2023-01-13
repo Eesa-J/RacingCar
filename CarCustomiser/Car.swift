@@ -15,7 +15,13 @@ struct Car {
     var handling: Int
     
     func getStatsDisplay() -> String {
-        let statsDisplay = (" Make: \(make) \n Model: \(model) \n Top Speed: \(topSpeed)mph \n Acceleration (0-60): \(acceleration)s \n Handling: \(handling)")
+        let statsDisplay = """
+                            Make: \(make)
+                            Model: \(model)
+                            Top Speed: \(topSpeed)mph
+                            Acceleration (0-60): \(acceleration)s
+                            Handling: \(handling)
+                            """
         return statsDisplay
     }
 }

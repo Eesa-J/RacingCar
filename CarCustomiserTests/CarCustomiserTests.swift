@@ -23,7 +23,13 @@ class CarCustomiserTests: XCTestCase {
     }
         func testStatsDisplayReturnsCorrectText() {
         //arrange
-        let expectedStatsDisplay = " Make: Mazda \n Model: MX-5 \n Top Speed: 125mph \n Acceleration (0-60): 7.7s \n Handling: 5"
+        let expectedStatsDisplay = """
+        Make: Mazda
+        Model: MX-5
+        Top Speed: 125mph
+        Acceleration (0-60): 7.7s
+        Handling: 5
+        """
         print(expectedStatsDisplay)
         //act
         let car = Car(make: "Mazda", model: "MX-5", topSpeed: 125, acceleration: 7.7, handling:5)
@@ -32,3 +38,4 @@ class CarCustomiserTests: XCTestCase {
             
     }
 }
+
