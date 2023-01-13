@@ -29,5 +29,6 @@ class CarCustomiserTests: XCTestCase {
         let car = Car(make: "Mazda", model: "MX-5", topSpeed: 125, acceleration: 7.7, handling:5)
         //assert
         XCTAssertEqual(car.getStatsDisplay(), expectedStatsDisplay)
+            
     }
 }
