@@ -14,6 +14,24 @@ struct ContentView: View {
     @State private var tiresPackage = false
     @State private var enginePackage = false
     @State private var bodyPackage = false
+    @State private var remainingFunds = 1000
+    
+    
+    var exhaustPackageEnabled: Bool {
+        return exhaustPackage ? true : remainingFunds >= 500 ? true : false
+    }
+    
+    var tiresPackageEnabled: Bool {
+        return tiresPackage ? true : remainingFunds >= 500 ? true : false
+    }
+    
+    var enginePackageEnabled: Bool {
+        return enginePackage ? true : remainingFunds >= 500 ? true : false
+    }
+    
+    var bodyPackageEnabled: Bool {
+        return bodyPackage ? true : remainingFunds >= 1000 ? true : false
+    }
     
     var body: some View {
         let exhaustPackageBinding = Binding<Bool> (
@@ -21,8 +39,10 @@ struct ContentView: View {
             set: { newValue in
                 self.exhaustPackage = newValue
                 if newValue == true {
+                    remainingFunds -= 500
                     starterCars.cars[selectedCar].topSpeed += 5
                 } else {
+                    remainingFunds += 500
                     starterCars.cars[selectedCar].topSpeed -= 5
                 }
             }
@@ -33,8 +53,10 @@ struct ContentView: View {
             set: { newValue in
                 self.tiresPackage = newValue
                 if newValue == true {
+                    remainingFunds -= 500
                     starterCars.cars[selectedCar].handling += 2
                 } else {
+                    remainingFunds += 500
                     starterCars.cars[selectedCar].handling -= 2
                 }
             }
@@ -45,8 +67,10 @@ struct ContentView: View {
             set: { newValue in
                 self.enginePackage = newValue
                 if newValue == true {
+                    remainingFunds -= 500
                     starterCars.cars[selectedCar].acceleration -= 0.1
                 } else {
+                    remainingFunds += 500
                     starterCars.cars[selectedCar].acceleration += 0.1
                 }
             }
@@ -57,34 +81,59 @@ struct ContentView: View {
             set: { newValue in
                 self.bodyPackage = newValue
                 if newValue == true {
+                    remainingFunds -= 1000
                     starterCars.cars[selectedCar].topSpeed += 3
                     starterCars.cars[selectedCar].acceleration -= 0.05
                 } else {
+                    remainingFunds += 1000
                     starterCars.cars[selectedCar].topSpeed -= 3
                     starterCars.cars[selectedCar].acceleration += 0.05
                 }
             }
         )
         
-        Form {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("\(starterCars.cars[selectedCar].getStatsDisplay())")
-                
-                Button("Next Car", action: {
-                    if selectedCar > starterCars.cars.count - 2 {
-                        selectedCar = 0
-                    }else {
-                        selectedCar += 1
-                    }
-                })
+        VStack {
+            Form {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("\(starterCars.cars[selectedCar].getStatsDisplay())")
+                    
+                    Button("Next Car", action: {
+                        self.exhaustPackage = false
+                        self.tiresPackage = false
+                        self.enginePackage = false
+                        self.bodyPackage = false
+                        if selectedCar > starterCars.cars.count - 2 {
+                            selectedCar = 0
+                        }else {
+                            selectedCar += 1
+                            resetDisplay()
+                        }
+                    })
+                }
+                Section {
+                    Toggle("Exhaust Package - £500", isOn: exhaustPackageBinding)
+                        .disabled(!exhaustPackageEnabled)
+                    Toggle("Tires Package - £500", isOn: tiresPackageBinding)
+                        .disabled(!tiresPackageEnabled)
+                    Toggle("Engine Package - £500", isOn: enginePackageBinding)
+                        .disabled(!enginePackageEnabled)
+                    Toggle("Body Package - £1000", isOn: bodyPackageBinding)
+                        .disabled(!bodyPackageEnabled)
+                }
             }
-            Section {
-                Toggle("Exhaust Package", isOn: exhaustPackageBinding)
-                Toggle("Tires Package", isOn: tiresPackageBinding)
-                Toggle("Engine Package", isOn: enginePackageBinding)
-                Toggle("Body Package", isOn: bodyPackageBinding)
-            }
+            Text("Remaining funds: \(remainingFunds)")
+                .foregroundColor(.green)
+                .baselineOffset(20)
         }
+    }
+    
+    func resetDisplay() {
+        remainingFunds = 1000
+        starterCars = StarterCars()
+        exhaustPackage = false
+        tiresPackage = false
+        enginePackage = false
+        bodyPackage = false
     }
 }
 
