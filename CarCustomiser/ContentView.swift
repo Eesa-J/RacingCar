@@ -14,8 +14,16 @@ struct ContentView: View {
     @State private var tiresPackage = false
     @State private var enginePackage = false
     @State private var bodyPackage = false
-    @State private var remainingFunds = 1000
+    @State private var remainingFunds = 1500
+    @State private var remainingTime = 30
     
+    var timerAt0Seconds: Bool {
+        if remainingTime > 0{
+            return true
+        } else {
+            return false
+        }
+    }
     
     var exhaustPackageEnabled: Bool {
         return exhaustPackage ? true : remainingFunds >= 500 ? true : false
@@ -32,6 +40,8 @@ struct ContentView: View {
     var bodyPackageEnabled: Bool {
         return bodyPackage ? true : remainingFunds >= 1000 ? true : false
     }
+    
+    let timer = Timer.publish(every:1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         let exhaustPackageBinding = Binding<Bool> (
@@ -68,10 +78,10 @@ struct ContentView: View {
                 self.enginePackage = newValue
                 if newValue == true {
                     remainingFunds -= 500
-                    starterCars.cars[selectedCar].acceleration -= 0.1
+                    starterCars.cars[selectedCar].acceleration -= 0.15
                 } else {
                     remainingFunds += 500
-                    starterCars.cars[selectedCar].acceleration += 0.1
+                    starterCars.cars[selectedCar].acceleration += 0.15
                 }
             }
         )
@@ -82,17 +92,24 @@ struct ContentView: View {
                 self.bodyPackage = newValue
                 if newValue == true {
                     remainingFunds -= 1000
-                    starterCars.cars[selectedCar].topSpeed += 3
-                    starterCars.cars[selectedCar].acceleration -= 0.05
+                    starterCars.cars[selectedCar].topSpeed += 5
+                    starterCars.cars[selectedCar].acceleration -= 0.1
                 } else {
                     remainingFunds += 1000
-                    starterCars.cars[selectedCar].topSpeed -= 3
-                    starterCars.cars[selectedCar].acceleration += 0.05
+                    starterCars.cars[selectedCar].topSpeed -= 5
+                    starterCars.cars[selectedCar].acceleration += 0.1
                 }
             }
         )
         
         VStack {
+            Text("\(remainingTime)")
+                .onReceive(timer) { _ in
+                    if self.remainingTime > 0 {
+                        self.remainingTime -= 1
+                    }
+                }
+                .foregroundColor(.red)
             Form {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("\(starterCars.cars[selectedCar].getStatsDisplay())")
@@ -113,12 +130,16 @@ struct ContentView: View {
                 Section {
                     Toggle("Exhaust Package - £500", isOn: exhaustPackageBinding)
                         .disabled(!exhaustPackageEnabled)
+                        .disabled(!timerAt0Seconds)
                     Toggle("Tires Package - £500", isOn: tiresPackageBinding)
                         .disabled(!tiresPackageEnabled)
+                        .disabled(!timerAt0Seconds)
                     Toggle("Engine Package - £500", isOn: enginePackageBinding)
                         .disabled(!enginePackageEnabled)
+                        .disabled(!timerAt0Seconds)
                     Toggle("Body Package - £1000", isOn: bodyPackageBinding)
                         .disabled(!bodyPackageEnabled)
+                        .disabled(!timerAt0Seconds)
                 }
             }
             Text("Remaining funds: \(remainingFunds)")
@@ -128,7 +149,7 @@ struct ContentView: View {
     }
     
     func resetDisplay() {
-        remainingFunds = 1000
+        remainingFunds = 1500
         starterCars = StarterCars()
         exhaustPackage = false
         tiresPackage = false
