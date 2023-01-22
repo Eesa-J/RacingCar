@@ -28,8 +28,11 @@ class CarCustomiserUITests: XCTestCase {
         app.launch()
         
         //act
-                
+        app.switches["Exhaust Package - £500"].tap()
+        app.switches["Tires Package - £500"].tap()
+        app.switches["Engine Package - £500"].tap()
         //assert
+        XCTAssertEqual(app.switches["Body Package - £1000"].isEnabled, false)
     }
 
     func testLaunchPerformance() throws {
